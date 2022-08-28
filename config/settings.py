@@ -27,12 +27,25 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'beRealClone',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders'
 ]
+
+
+
+CORS_ORIGIN_WHITELIST = (
+    'https://localhost',
+    'https://localhost:5500',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'https://127.0.0.1:5500',
+    'https://localservername'
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
