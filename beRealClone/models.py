@@ -14,8 +14,8 @@ class User(models.Model):
     followers = models.IntegerField(null = False, default=0)
     following = models.IntegerField(null = False, default=0)
     
-    createdAt = models.DateField(auto_now_add=True) 
-    updatedAt = models.DateField(auto_now_add=True) 
+    createdAt = models.DateTimeField(auto_now_add=True) 
+    updatedAt = models.DateTimeField(auto_now_add=True) 
     
     def __str__(self):
         return self.name
@@ -29,8 +29,8 @@ class Post(models.Model):
     likes = models.IntegerField(default=0)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    createdAt = models.DateField(auto_now_add=True) 
-    updatedAt = models.DateField(auto_now_add=True) 
+    createdAt = models.DateTimeField(auto_now_add=True) 
+    updatedAt = models.DateTimeField(auto_now_add=True) 
 
 #abbeyroad0277
 #class Reactions
