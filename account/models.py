@@ -27,7 +27,7 @@ class Profile(models.Model):
     longitude = models.FloatField(null=True, blank=True)
 
     following = models.ManyToManyField(
-        'self', symmetrical=False, related_name='followers')
+        'self', symmetrical=False, related_name='followers', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
