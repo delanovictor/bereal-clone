@@ -7,5 +7,5 @@ from feed.models import *
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'person', 'image', 'likes',  'latitude',
+        fields = ['id', 'person', 'image',  'latitude',
                   'longitude', 'created_at', 'updated_at']
