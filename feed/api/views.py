@@ -1,7 +1,7 @@
 import boto3
 from datetime import datetime
 from decouple import config
-
+from account.models import Person
 from feed.models import *
 from feed.api.serializer import *
 
@@ -9,6 +9,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.core.paginator import Paginator
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -45,7 +46,54 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(post_data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+class FeedViewSet(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+    http_method_names = ['get']
+
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated, ]
+
+        return super(FeedViewSet, self).get_permissions()
+
+    def get_queryset(self):
+        data = {}
+        queryset = Post.objects.all()
+
+        data['feed_type'] = self.kwargs['feed_type']
+        data['person_id'] = self.request.user.id
+        data['page'] = self.request.GET.get('page')
+
+        feed_request = FeedRequestSerializer(data=data)
+        feed_request.is_valid(raise_exception=True)
+
+        if data['feed_type'] == 'friends':
+            # Get user's friends
+            following_query_result = Person.objects.filter(
+                id=data['person_id']).values('following')
+
+            following_list = []
+
+            for person in following_query_result:
+                following_list.append(person['following'])
+
+            queryset = Post.objects.filter(
+                person__in=following_list).order_by('-created_at')
+
+        elif data['feed_type'] == 'discovery':
+            queryset = Post.objects.all().order_by('-created_at')
+        elif data['feed_type'] == 'memories':
+            queryset = Post.objects.filter(person=data['person_id'])
+
+        paginator = Paginator(queryset, 100)
+
+        page_obj = paginator.get_page(data['page'])
+
+        return page_obj
+
+
 # TODO: Achar o lugar correto para colocar essa função
+
 def get_image_url(user_data):
 
     s3_client = boto3.client(

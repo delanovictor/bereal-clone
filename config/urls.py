@@ -3,10 +3,12 @@ from django.urls import path, include
 
 from rest_framework import routers
 
+from feed.api.urls import router as feed_router
+from account.api.urls import router as account_router
 
-from feed.api.views import PostViewSet
-from account.api.views import PersonViewSet, MyTokenObtainPairView
 
+from account.api.views import MyTokenObtainPairView
+from feed.api.views import *
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -15,8 +17,8 @@ from rest_framework_simplejwt.views import (
 
 router = routers.DefaultRouter()
 
-router.register(r'persons', PersonViewSet)
-router.register(r'posts', PostViewSet)
+router.registry.extend(feed_router.registry)
+router.registry.extend(account_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,25 +1,12 @@
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from account.models import *
 from account.api.serializer import *
-
-
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-
-        # Add custom claims
-        token['username'] = user.username
-        # ...
-
-        return token
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -51,3 +38,23 @@ class PersonViewSet(viewsets.ModelViewSet):
         # print(queryset[0].user.email)
 
         return queryset
+
+
+class UserRegisterViewSet(viewsets.ModelViewSet):
+    serializer_class = UserRegisterSerializer
+    http_method_names = ['post']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+
+        post_data = {}
+        post_data['response'] = 'Successfully registrated a new user'
+        post_data['email'] = serializer.email
+        post_data['username'] = serializer.username
+
+        return Response(post_data, status=status.HTTP_201_CREATED, headers=headers)
