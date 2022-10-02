@@ -1,7 +1,7 @@
 import boto3
 from datetime import datetime
 from decouple import config
-from account.models import Person
+from account.models import Profile
 from feed.models import *
 from feed.api.serializer import *
 
@@ -24,10 +24,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Post.objects.all()
 
-        person_id = self.request.query_params.get('person')
+        profile_id = self.request.query_params.get('profile')
 
-        if person_id is not None:
-            queryset = queryset.filter(person=person_id)
+        if profile_id is not None:
+            queryset = queryset.filter(profile=profile_id)
 
         return queryset
 
@@ -61,7 +61,7 @@ class FeedViewSet(viewsets.ModelViewSet):
         queryset = Post.objects.all()
 
         data['feed_type'] = self.kwargs['feed_type']
-        data['person_id'] = self.request.user.id
+        data['profile_id'] = self.request.user.id
         data['page'] = self.request.GET.get('page')
 
         feed_request = FeedRequestSerializer(data=data)
@@ -69,21 +69,21 @@ class FeedViewSet(viewsets.ModelViewSet):
 
         if data['feed_type'] == 'friends':
             # Get user's friends
-            following_query_result = Person.objects.filter(
-                id=data['person_id']).values('following')
+            following_query_result = Profile.objects.filter(
+                id=data['profile_id']).values('following')
 
             following_list = []
 
-            for person in following_query_result:
-                following_list.append(person['following'])
+            for profile in following_query_result:
+                following_list.append(profile['following'])
 
             queryset = Post.objects.filter(
-                person__in=following_list).order_by('-created_at')
+                profile__in=following_list).order_by('-created_at')
 
         elif data['feed_type'] == 'discovery':
             queryset = Post.objects.all().order_by('-created_at')
         elif data['feed_type'] == 'memories':
-            queryset = Post.objects.filter(person=data['person_id'])
+            queryset = Post.objects.filter(profile=data['profile_id'])
 
         paginator = Paginator(queryset, 100)
 
@@ -106,7 +106,7 @@ def get_image_url(user_data):
     ts = datetime.timestamp(dt)
 
     # /{user}/{timestamp}.{ext}
-    file_key = str(user_data['person']) + '/' + str(int(ts)) + '.' + 'jpg'
+    file_key = str(user_data['profile']) + '/' + str(int(ts)) + '.' + 'jpg'
 
     upload_url = s3_client.generate_presigned_url(
         'put_object',

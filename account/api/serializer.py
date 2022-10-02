@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from account.models import Person
+from account.models import Profile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email']
 
 
-class PersonSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         source='user.username', read_only=True)
     email = serializers.CharField(
@@ -20,7 +20,7 @@ class PersonSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = Person
+        model = Profile
         fields = ['id', 'username', 'email',
                   'profile_image', 'followers_count', 'following_count', 'latitude', 'longitude', 'created_at', 'updated_at']
 

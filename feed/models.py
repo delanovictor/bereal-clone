@@ -1,11 +1,11 @@
 from platform import mac_ver
 from random import choices
 from django.db import models
-from account.models import Person
+from account.models import Profile
 
 
 class Post(models.Model):
-    person = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL)
+    profile = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL)
 
     POST_IMAGES = (
         ('Cats', 'https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-rush-45170.jpeg'),

@@ -13,26 +13,26 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.all()
-    serializer_class = PersonSerializer
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
     def get_permissions(self):
         self.permission_classes = [IsAuthenticated, ]
 
-        return super(PersonViewSet, self).get_permissions()
+        return super(ProfileViewSet, self).get_permissions()
 
     def get_queryset(self):
 
-        queryset = Person.objects.all()
+        queryset = Profile.objects.all()
 
-        person_following_id = self.request.query_params.get('following')
-        person_followers_id = self.request.query_params.get('followers')
+        profile_following_id = self.request.query_params.get('following')
+        profile_followers_id = self.request.query_params.get('followers')
 
-        if person_followers_id is not None:
-            queryset = queryset.filter(following=person_followers_id)
-        elif person_following_id is not None:
-            queryset = queryset.filter(followers=person_following_id)
+        if profile_followers_id is not None:
+            queryset = queryset.filter(following=profile_followers_id)
+        elif profile_following_id is not None:
+            queryset = queryset.filter(followers=profile_following_id)
 
         # print(queryset.query)
         # print(queryset[0].user.email)

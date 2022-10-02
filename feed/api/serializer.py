@@ -8,12 +8,12 @@ from feed.models import *
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'person', 'image',  'latitude',
+        fields = ['id', 'profile', 'image',  'latitude',
                   'longitude', 'created_at', 'updated_at']
 
 
 class FeedRequestSerializer(serializers.Serializer):
-    person_id = fields.IntegerField(min_value=0)
+    profile_id = fields.IntegerField(min_value=0)
     feed_type = fields.CharField(max_length=255)
     page = fields.IntegerField(min_value=0)
 
@@ -24,7 +24,7 @@ class FeedRequestSerializer(serializers.Serializer):
         if (data['feed_type'] not in feed_type_list):
             raise serializers.ValidationError("Invalid feed type")
 
-        if (data['person_id'] is None):
+        if (data['profile_id'] is None):
             raise serializers.ValidationError("Unauthorized")
 
         if (data['page'] is None):
